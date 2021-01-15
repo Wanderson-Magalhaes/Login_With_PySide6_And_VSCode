@@ -18,40 +18,40 @@ ApplicationWindow{
     Material.accent: Material.LightBlue
 
     
-    QtObject {
-        id: internal
-        property string user: "wanderson"
-        property string pass: "123456"
+    // QtObject {
+    //     id: internal
+    //     property string user: "wanderson"
+    //     property string pass: "123456"
 
-        // CHECK LOGIN FUNCTION
-        function checkLogin(username, password) {
-            if(username === user && password === pass){
-                var component = Qt.createComponent("app.qml")
-                var win = component.createObject()
-                win.show()
-                visible = false
-            } else{
+    //     // CHECK LOGIN FUNCTION
+    //     function checkLogin(username, password) {
+    //         if(username === user && password === pass){
+    //             var component = Qt.createComponent("app.qml")
+    //             var win = component.createObject()
+    //             win.show()
+    //             visible = false
+    //         } else{
 
-                // CHANGE USER COLOR
-                if(username !== user){
-                    usernameField.Material.foreground = Material.Pink
-                    usernameField.Material.accent = Material.Pink
-                } else {
-                    usernameField.Material.foreground = Material.LightBlue
-                    usernameField.Material.accent = Material.LightBlue
-                }
+    //             // CHANGE USER COLOR
+    //             if(username !== user){
+    //                 usernameField.Material.foreground = Material.Pink
+    //                 usernameField.Material.accent = Material.Pink
+    //             } else {
+    //                 usernameField.Material.foreground = Material.LightBlue
+    //                 usernameField.Material.accent = Material.LightBlue
+    //             }
 
-                // CHANGE PASS COLOR
-                if(password !== pass){
-                    passwordField.Material.foreground = Material.Pink
-                    passwordField.Material.accent = Material.Pink
-                } else {
-                    passwordField.Material.foreground = Material.LightBlue
-                    passwordField.Material.accent = Material.LightBlue
-                }
-            }
-        }
-    }
+    //             // CHANGE PASS COLOR
+    //             if(password !== pass){
+    //                 passwordField.Material.foreground = Material.Pink
+    //                 passwordField.Material.accent = Material.Pink
+    //             } else {
+    //                 passwordField.Material.foreground = Material.LightBlue
+    //                 passwordField.Material.accent = Material.LightBlue
+    //             }
+    //         }
+    //     }
+    // }
     
 
     // CREATE TOP BAR
@@ -134,6 +134,35 @@ ApplicationWindow{
         anchors.top: checkBox.bottom
         anchors.topMargin: 10        
         anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: internal.checkLogin(usernameField.text, passwordField.text)
+        onClicked: backend.checkLogin(usernameField.text, passwordField.text)
     }
+
+    
+    Connections {
+        target: backend
+
+        // CUSTOM PROPERTIES
+        property string username: ""
+        property string password: ""
+        function onSignalUser(myUser){ username = myUser }
+        function onSignalPass(myPass){ password = myPass }
+
+        // FUNTION OPEN NEW WINDOW (APP WINDOW)
+        function onSignalLogin(boolValue) {
+            if(boolValue){
+                var component = Qt.createComponent("app.qml")
+                var win = component.createObject()
+                win.textUsername = username
+                win.textPassword = password
+                win.show()
+                visible = false
+            } else{
+                // CHANGE USER COLOR
+                usernameField.Material.foreground = Material.Pink
+                usernameField.Material.accent = Material.Pink
+                passwordField.Material.foreground = Material.Pink
+                passwordField.Material.accent = Material.Pink
+            }
+        }
+    }    
 }
